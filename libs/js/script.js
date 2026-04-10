@@ -242,6 +242,11 @@ $(document).ready(function () {
     function fetchWeatherAndForecastCapital(isoCode) {
       $("#pre-load").removeClass("fadeOut").show();
       $.getJSON(`libs/php/sourceAPIs.php?weatherCapital=1&iso=${isoCode}`, function(data) {
+        if (data.error) {
+          $("#pre-load").addClass("fadeOut");
+          alert("Weather error: " + data.error);
+          return;
+        }
          // 1) Current Weather
         const capitalCity = data.capital;
         const countryName = $("#countrySelect option:selected").text();
@@ -305,6 +310,9 @@ $(document).ready(function () {
         $("#lastUpdated").text(lastUpdatedTime);
 
         $("#pre-load").addClass("fadeOut");
+      }).fail(function(jqXHR) {
+        $("#pre-load").addClass("fadeOut");
+        alert("Weather request failed: " + jqXHR.status + " " + jqXHR.statusText);
       });
     }
 
