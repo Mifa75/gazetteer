@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gazetteer</title>
+    <meta name="author" content="Silvia Scano">
+
+    <link href="libs/img/favicon-32x32.png" rel="icon">
+    <link href="libs/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <link rel="stylesheet" href="libs/CSS/leaflet.css">
+    <link rel="stylesheet" href="libs/CSS/toastify.css">
+    <link rel="stylesheet" href="libs/CSS/MarkerCluster.css">
+    <link rel="stylesheet" href="libs/CSS/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="libs/CSS/leaflet.extra-markers.min.css">
+    <link rel="stylesheet" href="libs/CSS/all.min.css">
+    <link rel="stylesheet" href="libs/CSS/fontawesome.min.css">
+    <link rel="stylesheet" href="libs/CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/CSS/easy-button.css">
+    <link href="libs/CSS/style.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <div id="preloader"></div>
+
+    <span id="selectContainer">
+      <select id="countrySelect" name="countrySelect" class="form-select shadow-sm">
+        <option value="">Select Country</option>
+      </select>
+    </span>
+    
+    <div id="map"></div>
+    
+    <div id="modalGazetteer" class="modal fade" data-bs-backdrop="false" tabindex="-1" aria-labelledby="informationModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-success bg-gradient text-white">
+            <h5 class="modal-title">Key Information</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-striped">
+              <tr>
+                <td class="text-center"><i class="fa-solid fa-globe fa-xl text-success"></i></td>
+                <td>Continent</td>
+                <td class="text-end"></td>
+            </tr>
+            <tr>
+                <td class="text-center"><i class="fa-solid fa-city fa-xl text-success"></i></td>
+                <td>Capital</td>
+                <td class="text-end"></td>
+            </tr>
+            <tr>
+                <td class="text-center"><i class="fa-solid fa-chart-area fa-xl text-success"></i></td>
+                <td>Area (sq km)</td>
+                <td class="text-end"></td>
+            </tr> 
+            <tr>
+                <td class="text-center"><i class="fa-solid fa-money-bill fa-xl text-success"></i></td>
+                <td>Currency</td>
+                <td class="text-end"></td>
+            </tr>
+            <tr>
+                <td class="text-center"><i class="fa-solid fa-users fa-xl text-success"></i></td>
+                <td>Population</td>
+                <td class="text-end"></td>
+            </tr>
+            <tr>
+                <td class="text-center"><i class="fa-solid fa-language fa-xl text-success"></i></td>
+                <td>Languages</td>
+                <td class="text-end"></td>
+            </tr>          
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalWeather" tabindex="-1" aria-labelledby="weatherModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-warning bg-gradient text-white">
+            <h5 class="modal-title" id="weatherModalLabel"></h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="pre-load"></div>
+            <!-- Current Weather -->
+            <div id="weatherContent" class="me-3">
+              <div class="row">
+                <div class="col border mt-1 ms-3 mb2">
+                  <h6>Today</h6>
+                  <div class="row">
+                    <div class="col text-center">
+                      <span id="todayConditions"></span>
+                    </div>
+                    <div class="col text-center">
+                      <img id="todayIcon" src="" alt="Icon" class="img-fluid mt-0"/>
+                    </div>
+                    <div class="col text-center">
+                      <p><span id="todayMaxTemp"></span>°C</p>
+                      <p><span id="todayMinTemp"></span>°C</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col border mt-2 ms-3 mb-0">
+                  <div class="row">
+                    <div class="col text-center">
+                      <h6 id="day1Date"></h6>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col text-center">
+                      <img id="day1Icon" src="" alt="Icon" />
+                    </div>
+                    <div class="col text-center">
+                      <p><span id="day1MaxTemp"></span>°C</p>
+                      <p><span id="day1MinTemp"></span>°C</p>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="col border mt-2 ms-3 mb-0">
+                  <div class="col text-center">
+                    <h6 id="day2Date"></h6>
+                  </div>
+                  <div class="row">
+                    <div class="col text-center">
+                      <img id="day2Icon" src="" alt="Icon" />
+                    </div>
+                    <div class="col text-center">
+                      <p><span id="day2MaxTemp"></span>°C</p>
+                      <p><span id="day2MinTemp"></span>°C</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+            </div>
+    
+          </div>
+    
+          <div class="modal-footer">
+            <small>Last updated: <span id="lastUpdated"></span></small>
+          </div>
+    
+        </div>
+      </div>
+    </div>
+
+    <div id="modalCurrency" class="modal fade" data-bs-backdrop="false" tabindex="-1" aria-labelledby="currencyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-m modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-secondary bg-gradient text-white">
+            <h5 class="modal-title"><i class="fa-solid fa-money-bill-transfer me-2"></i>Currency Calculator</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+
+              <div class="form-floating mb-3">
+    
+                <input id="fromAmount" type="number" class="form-control" value="1" min="1" step="1" placeholder=" ">
+                <label for="fromAmount">From USD</label>
+    
+              </div>
+    
+              <div class="form-floating mb-3">
+    
+                <select id="currencies" class="form-select" placeholder=" ">
+    
+                </select>
+                
+                <label for="currencies">Convert to</label>
+    
+              </div>
+    
+              <div class="form-floating">
+    
+                <input id="toAmount" type="text" class="form-control" disabled placeholder=" ">
+                <label for="toAmount">Result</label>
+    
+              </div>
+    
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-success btn-sm" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalNews" class="modal fade" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-danger bg-gradient text-white">
+            <h5 class="modal-title">BREAKING NEWS</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="newsContent" class="text-start">
+              <!-- News articles will be injected here via JavaScript -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-info btn-sm"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalWiki" class="modal fade" tabindex="-1" aria-labelledby="wikipediaModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-secondary bg-gradient text-white">
+            <h5 class="modal-title">Wikipedia</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div id="wikiContent" class="text-center">
+              <p>Loading Wikipedia information...</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="libs/js/leaflet.js"></script>
+    <script src="libs/js/jquery-3.7.1.min.js"></script>
+    <script src="libs/js/toastify.js"></script>
+    <script src="libs/js/leaflet.markercluster.js"></script>
+    <script src="libs/js/leaflet.extra-markers.min.js"></script>
+    <script src="libs/js/bootstrap.bundle.min.js"></script>
+    <script src="libs/js/easy-button.js"></script>
+    <script src="libs/js/numeral.min.js"></script>
+    <script src="libs/js/date.js"></script>
+    <script type="application/javascript" src="libs/js/script.js"></script>
+  </body>
+</html>
