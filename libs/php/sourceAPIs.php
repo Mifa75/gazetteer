@@ -23,12 +23,21 @@ if ($data === null) {
     exit;
 }
 
-// API credentials
-$geoApiKey = "8a6a15533b384e5eae2173ec47f08b59"; // OpenCage API Key
-$weatherApiKey = "ead1cebb41d97a623f20e1e5d5768232"; // OpenWeatherMap API Key
-$geoNamesUser = "silviascano"; // GeoNames Username
-$exchangeRateAPI = "662a088d525921701c83ae01"; // Exchangerate API
-$newsApiKey = "pub_700233e0aa8d422e324b69ca665d9e9c6d02a"; // Newsdata.io API
+// Load API credentials from .env file
+$envFile = __DIR__ . "/../../.env";
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        if (str_starts_with(trim($line), '#')) continue;
+        [$key, $value] = explode('=', $line, 2);
+        putenv(trim($key) . '=' . trim($value));
+    }
+}
+
+$geoApiKey     = getenv('GEO_API_KEY');
+$weatherApiKey = getenv('WEATHER_API_KEY');
+$geoNamesUser  = getenv('GEONAMES_USER');
+$exchangeRateAPI = getenv('EXCHANGE_RATE_API');
+$newsApiKey    = getenv('NEWS_API_KEY');
 
 // 1. Fetch country borders by ISO code (for border display)
 if (isset($_GET['iso']) && !isset($_GET['countryInfo']) && !isset($_GET['weather']) && !isset($_GET['forecast']) && !isset($_GET['from']) && !isset($_GET['news']) && !isset($_GET['weatherCapital'])) {
@@ -64,7 +73,6 @@ if (isset($_GET['countryInfo']) && isset($_GET['iso'])) {
         echo json_encode(["error" => "Failed to fetch country data"]);
         exit;
     }
-    curl_close($ch);
     
     $geoData = json_decode($geoResponse, true);
     if ($geoData && isset($geoData['geonames'][0])) {
@@ -101,11 +109,9 @@ if (isset($_GET['lat']) && isset($_GET['lng'])) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($ch);
     if(curl_errno($ch)) {
-        curl_close($ch);
         echo json_encode(["error" => "cURL Error: " . curl_error($ch)]);
         exit;
     }
-    curl_close($ch);
     
     $geoData = json_decode($response, true);
     if ($geoData && !empty($geoData['results'])) {
@@ -137,7 +143,6 @@ if (isset($_GET['getCurrencyCodes'])) {
         echo json_encode(["error" => "cURL Error: " . curl_error($ch)]);
         exit;
     }
-    curl_close($ch);
 
     $json = json_decode($resp, true);
     if (isset($json['result']) && $json['result'] === "success") {
@@ -169,10 +174,9 @@ if (isset($_GET['convertCurrency'])) {
         echo json_encode(["error" => "cURL Error: " . curl_error($ch)]);
         exit;
     }
-    curl_close($ch);
 
     $json = json_decode($resp, true);
-    
+
     if (isset($json['result']) && $json['result'] === "success") {
         $rate      = $json['conversion_rate'];
         $converted = $amount * $rate;
@@ -332,7 +336,6 @@ if (isset($_GET['news']) && isset($_GET['iso'])) {
         echo json_encode(["error" => "cURL Error: " . curl_error($ch)]);
         exit;
     }
-    curl_close($ch);
 
     // Decode the JSON response
     $newsData = json_decode($resp, true);
